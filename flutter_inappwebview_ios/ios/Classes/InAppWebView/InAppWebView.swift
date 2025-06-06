@@ -68,10 +68,49 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
     var oldZoomScale = Float(1.0)
     
     fileprivate var interceptOnlyAsyncAjaxRequestsPluginScript: PluginScript?
+  
+    @available(*, unavailable, message: "allowsBackForwardNavigationGestures is unavailable for InAppWebView.")
+    override public var allowsBackForwardNavigationGestures: Bool {
+        get { super.allowsBackForwardNavigationGestures }
+        set { super.allowsBackForwardNavigationGestures = newValue }
+    }
     
+    var backNavigationGestures: UIScreenEdgePanGestureRecognizer?;
+    var forwardNavigationGestures: UIScreenEdgePanGestureRecognizer?;
+  
+    public var allowsBackNavigationGestures: Bool {
+        get { backNavigationGestures?.isEnabled ?? true }
+        set {
+            backNavigationGestures?.isEnabled = newValue
+        }
+    }
+      
+    public var allowsForwardNavigationGestures: Bool {
+        get { forwardNavigationGestures?.isEnabled ?? true }
+        set {
+            forwardNavigationGestures?.isEnabled = newValue
+        }
+    }
+  
+    public override func addGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer) {
+        if (gestureRecognizer.isKind(of: UIScreenEdgePanGestureRecognizer.self)) {
+          let navigationGestures = gestureRecognizer as! UIScreenEdgePanGestureRecognizer
+          navigationGestures.isEnabled = false
+          if (navigationGestures.edges == UIRectEdge.left) {
+            self.backNavigationGestures = navigationGestures
+          }
+          if (navigationGestures.edges == UIRectEdge.right) {
+            self.forwardNavigationGestures = navigationGestures
+          }
+        }
+    
+        super.addGestureRecognizer(gestureRecognizer)
+    }
+      
     init(id: Any?, plugin: SwiftFlutterPlugin?, frame: CGRect, configuration: WKWebViewConfiguration,
          contextMenu: [String: Any]?, userScripts: [UserScript] = []) {
         super.init(frame: frame, configuration: configuration)
+        super.allowsBackForwardNavigationGestures = true
         self.id = id
         self.plugin = plugin
         if let id = id, let registrar = plugin?.registrar {
@@ -440,8 +479,9 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
                 scrollView.contentInsetAdjustmentBehavior =
                     UIScrollView.ContentInsetAdjustmentBehavior.init(rawValue: settings.contentInsetAdjustmentBehavior)!
             }
-            
-            allowsBackForwardNavigationGestures = settings.allowsBackForwardNavigationGestures
+
+            allowsBackNavigationGestures = settings.allowsBackNavigationGestures
+            allowsForwardNavigationGestures = settings.allowsForwardNavigationGestures
             if #available(iOS 9.0, *) {
                 allowsLinkPreview = settings.allowsLinkPreview
                 if !settings.userAgent.isEmpty {
@@ -1110,8 +1150,16 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
             configuration.suppressesIncrementalRendering = newSettings.suppressesIncrementalRendering
         }
         
-        if newSettingsMap["allowsBackForwardNavigationGestures"] != nil && settings?.allowsBackForwardNavigationGestures != newSettings.allowsBackForwardNavigationGestures {
-            allowsBackForwardNavigationGestures = newSettings.allowsBackForwardNavigationGestures
+        // if newSettingsMap["allowsBackForwardNavigationGestures"] != nil && settings?.allowsBackForwardNavigationGestures != newSettings.allowsBackForwardNavigationGestures {
+        //     allowsBackForwardNavigationGestures = newSettings.allowsBackForwardNavigationGestures
+        // }
+
+        if newSettingsMap["allowsBackNavigationGestures"] != nil && settings?.allowsBackNavigationGestures != newSettings.allowsBackNavigationGestures {
+            allowsBackNavigationGestures = newSettings.allowsBackNavigationGestures
+        }
+
+        if newSettingsMap["allowsForwardNavigationGestures"] != nil && settings?.allowsForwardNavigationGestures != newSettings.allowsForwardNavigationGestures {
+            allowsForwardNavigationGestures = newSettings.allowsForwardNavigationGestures
         }
         
         if newSettingsMap["javaScriptCanOpenWindowsAutomatically"] != nil && settings?.javaScriptCanOpenWindowsAutomatically != newSettings.javaScriptCanOpenWindowsAutomatically {
