@@ -26,6 +26,12 @@ class IOSInAppWebViewOptions
   ///Set to `true` to allow the horizontal swipe gestures trigger back-forward list navigations. The default value is `true`.
   bool allowsBackForwardNavigationGestures;
 
+  ///Set to `true` to allow the horizontal swipe gestures trigger back-forward list navigations. The default value is `true`.
+  bool allowsBackNavigationGestures;
+
+  ///Set to `true` to allow the horizontal swipe gestures trigger back-forward list navigations. The default value is `true`.
+  bool allowsForwardNavigationGestures;
+
   ///Set to `true` to allow that pressing on a link displays a preview of the destination for the link. The default value is `true`.
   ///
   ///**NOTE**: available on iOS 9.0+.
@@ -233,6 +239,8 @@ class IOSInAppWebViewOptions
       this.suppressesIncrementalRendering = false,
       this.allowsAirPlayForMediaPlayback = true,
       this.allowsBackForwardNavigationGestures = true,
+      this.allowsBackNavigationGestures = true,
+      this.allowsForwardNavigationGestures = true,
       this.allowsLinkPreview = true,
       this.ignoresViewportScaleLimits = false,
       this.allowsInlineMediaPlayback = false,
@@ -279,6 +287,8 @@ class IOSInAppWebViewOptions
       "allowsAirPlayForMediaPlayback": allowsAirPlayForMediaPlayback,
       "allowsBackForwardNavigationGestures":
           allowsBackForwardNavigationGestures,
+      "allowsBackNavigationGestures": allowsBackNavigationGestures,
+      "allowsForwardNavigationGestures": allowsForwardNavigationGestures,
       "allowsLinkPreview": allowsLinkPreview,
       "ignoresViewportScaleLimits": ignoresViewportScaleLimits,
       "allowsInlineMediaPlayback": allowsInlineMediaPlayback,
@@ -333,6 +343,9 @@ class IOSInAppWebViewOptions
         map["allowsAirPlayForMediaPlayback"];
     instance.allowsBackForwardNavigationGestures =
         map["allowsBackForwardNavigationGestures"];
+    instance.allowsBackNavigationGestures = map["allowsBackNavigationGestures"];
+    instance.allowsForwardNavigationGestures =
+        map["allowsForwardNavigationGestures"];
     instance.allowsLinkPreview = map["allowsLinkPreview"];
     instance.ignoresViewportScaleLimits = map["ignoresViewportScaleLimits"];
     instance.allowsInlineMediaPlayback = map["allowsInlineMediaPlayback"];

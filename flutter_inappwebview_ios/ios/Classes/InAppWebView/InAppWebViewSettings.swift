@@ -43,7 +43,9 @@ public class InAppWebViewSettings: ISettings<InAppWebView> {
     var enableViewportScale = false
     var suppressesIncrementalRendering = false
     var allowsAirPlayForMediaPlayback = true
-    var allowsBackForwardNavigationGestures = true
+    // var allowsBackForwardNavigationGestures = true
+    var allowsBackNavigationGestures = true
+    var allowsForwardNavigationGestures = true
     var allowsLinkPreview = true
     var ignoresViewportScaleLimits = false
     var allowsInlineMediaPlayback = false
@@ -141,7 +143,9 @@ public class InAppWebViewSettings: ISettings<InAppWebView> {
             }
             realSettings["minimumFontSize"] = Int(configuration.preferences.minimumFontSize)
             realSettings["suppressesIncrementalRendering"] = configuration.suppressesIncrementalRendering
-            realSettings["allowsBackForwardNavigationGestures"] = webView.allowsBackForwardNavigationGestures
+            // realSettings["allowsBackForwardNavigationGestures"] = webView.allowsBackForwardNavigationGestures
+            realSettings["allowsBackNavigationGestures"] = webView.allowsBackNavigationGestures
+            realSettings["allowsForwardNavigationGestures"] = webView.allowsForwardNavigationGestures
             realSettings["allowsInlineMediaPlayback"] = configuration.allowsInlineMediaPlayback
             if #available(iOS 13.0, *) {
                 realSettings["isFraudulentWebsiteWarningEnabled"] = configuration.preferences.isFraudulentWebsiteWarningEnabled

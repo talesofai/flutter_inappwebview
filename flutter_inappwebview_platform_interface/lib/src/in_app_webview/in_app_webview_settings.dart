@@ -1099,10 +1099,6 @@ as it can cause framerate drops on animations in Android 9 and lower (see [Hybri
   ///
   ///The default value is `true`.
   @SupportedPlatforms(platforms: [
-    IOSPlatform(
-        apiName: "WKWebView.allowsBackForwardNavigationGestures",
-        apiUrl:
-            "https://developer.apple.com/documentation/webkit/wkwebview/1414995-allowsbackforwardnavigationgestu"),
     MacOSPlatform(
         apiName: "WKWebView.allowsBackForwardNavigationGestures",
         apiUrl:
@@ -1114,6 +1110,18 @@ as it can cause framerate drops on animations in Android 9 and lower (see [Hybri
             "https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2settings6?view=webview2-1.0.2849.39#put_isswipenavigationenabled"),
   ])
   bool? allowsBackForwardNavigationGestures;
+
+  ///Set to `true` to allow the horizontal swipe gestures trigger back-forward list navigations. The default value is `true`.
+  @SupportedPlatforms(platforms: [
+    IOSPlatform()
+  ])
+  bool? allowsBackNavigationGestures;
+
+  ///Set to `true` to allow the horizontal swipe gestures trigger back-forward list navigations. The default value is `true`.
+  @SupportedPlatforms(platforms: [
+    IOSPlatform()
+  ])
+  bool? allowsForwardNavigationGestures;
 
   ///Set to `true` to allow that pressing on a link displays a preview of the destination for the link. The default value is `true`.
   @SupportedPlatforms(platforms: [
@@ -2158,6 +2166,8 @@ as it can cause framerate drops on animations in Android 9 and lower (see [Hybri
     this.suppressesIncrementalRendering = false,
     this.allowsAirPlayForMediaPlayback = true,
     this.allowsBackForwardNavigationGestures = true,
+    this.allowsBackNavigationGestures = true,
+    this.allowsForwardNavigationGestures = true,
     this.allowsLinkPreview = true,
     this.ignoresViewportScaleLimits = false,
     this.allowsInlineMediaPlayback = false,
