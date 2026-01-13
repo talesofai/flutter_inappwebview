@@ -68,7 +68,7 @@ public class FlutterWebView implements PlatformWebView {
     displayListenerProxy.onPostWebViewInitialization(displayManager);
 
     // set MATCH_PARENT layout params to the WebView, otherwise it won't take all the available space!
-    webView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    webView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
     // PullToRefreshSettings pullToRefreshSettings = new PullToRefreshSettings();
     // pullToRefreshSettings.parse(pullToRefreshInitialSettings);
     // pullToRefreshLayout = new PullToRefreshLayout(context, plugin, id, pullToRefreshSettings);
