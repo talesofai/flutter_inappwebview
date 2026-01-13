@@ -211,12 +211,12 @@ final public class InAppWebView extends InputAwareWebView implements InAppWebVie
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     
     // Fix for 1-pixel width reduction issue on high DPI devices
-    // Ensure the measured width matches the expected width exactly
+    // Ensure the measured width matches the parent container width exactly
     int expectedWidth = MeasureSpec.getSize(widthMeasureSpec);
     int measuredWidth = getMeasuredWidth();
     int measureMode = MeasureSpec.getMode(widthMeasureSpec);
     
-    // Debug logging
+    // Get parent container width
     ViewParent parent = getParent();
     int parentWidth = 0;
     if (parent instanceof ViewGroup) {
@@ -226,8 +226,16 @@ final public class InAppWebView extends InputAwareWebView implements InAppWebVie
     Log.d(LOG_TAG, String.format("onMeasure: expectedWidth=%d, measuredWidth=%d, measureMode=%d, parentWidth=%d, diff=%d",
             expectedWidth, measuredWidth, measureMode, parentWidth, expectedWidth - measuredWidth));
     
-    // If measured width is 1 pixel less than expected, fix it
-    if (expectedWidth > 0 && measuredWidth == expectedWidth - 1) {
+    // If parent width is 1 pixel more than expected width, use parent width instead
+    // This fixes the issue where Flutter's PlatformView passes a MeasureSpec that's 1px less
+    if (parentWidth > 0 && parentWidth == expectedWidth + 1) {
+      Log.d(LOG_TAG, String.format("Fixing 1-pixel width issue: using parent width %d instead of expected %d", parentWidth, expectedWidth));
+      int widthSpec = MeasureSpec.makeMeasureSpec(parentWidth, MeasureSpec.EXACTLY);
+      super.onMeasure(widthSpec, heightMeasureSpec);
+      int newMeasuredWidth = getMeasuredWidth();
+      Log.d(LOG_TAG, String.format("After fix: newMeasuredWidth=%d", newMeasuredWidth));
+    } else if (expectedWidth > 0 && measuredWidth == expectedWidth - 1) {
+      // Fallback: if measured width is 1 pixel less than expected, fix it
       Log.d(LOG_TAG, String.format("Fixing 1-pixel width issue: remeasuring with exact width %d", expectedWidth));
       int widthSpec = MeasureSpec.makeMeasureSpec(expectedWidth, MeasureSpec.EXACTLY);
       super.onMeasure(widthSpec, heightMeasureSpec);
