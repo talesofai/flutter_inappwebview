@@ -69,6 +69,8 @@ public class FlutterWebView implements PlatformWebView {
 
     // set MATCH_PARENT layout params to the WebView, otherwise it won't take all the available space!
     webView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+    // Ensure padding is 0 to avoid width reduction issues on high DPI devices
+    webView.setPadding(0, 0, 0, 0);
     // PullToRefreshSettings pullToRefreshSettings = new PullToRefreshSettings();
     // pullToRefreshSettings.parse(pullToRefreshInitialSettings);
     // pullToRefreshLayout = new PullToRefreshLayout(context, plugin, id, pullToRefreshSettings);
