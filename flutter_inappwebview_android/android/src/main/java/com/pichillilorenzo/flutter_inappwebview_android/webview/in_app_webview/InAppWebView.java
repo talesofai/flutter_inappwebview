@@ -210,7 +210,7 @@ final public class InAppWebView extends InputAwareWebView implements InAppWebVie
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     
-    // Fix for 1-pixel width reduction issue on high DPI devices
+    // Fix for 1-pixel width/height reduction issue on high DPI devices
     // 
     // Root cause analysis:
     // This issue occurs because Flutter's PlatformView (FlutterMutatorView) calculates the
@@ -219,29 +219,38 @@ final public class InAppWebView extends InputAwareWebView implements InAppWebVie
     // 2. Pixel alignment requirements in Flutter's rendering pipeline
     // 3. Rounding errors when converting logical pixels to physical pixels
     // 
-    // The parent container (FlutterMutatorView) has the correct width (e.g., 1440px),
-    // but the MeasureSpec passed to WebView is 1 pixel less (e.g., 1439px).
-    // This causes WebView's content area to be 1 pixel narrower than the container.
+    // The parent container (FlutterMutatorView) has the correct dimensions (e.g., 1440x3200px),
+    // but the MeasureSpec passed to WebView is 1 pixel less (e.g., 1439x3199px).
+    // This causes WebView's content area to be 1 pixel smaller than the container.
     //
-    // Solution: If parent width is exactly 1 pixel more than the MeasureSpec size,
-    // use the parent width to ensure WebView fills the entire container.
+    // Solution: If parent dimensions are exactly 1 pixel more than the MeasureSpec size,
+    // use the parent dimensions to ensure WebView fills the entire container.
     
     int expectedWidth = MeasureSpec.getSize(widthMeasureSpec);
+    int expectedHeight = MeasureSpec.getSize(heightMeasureSpec);
     ViewParent parent = getParent();
     
-    // Only check if we have a valid parent and expected width
-    if (parent instanceof ViewGroup && expectedWidth > 0) {
-      int parentWidth = ((ViewGroup) parent).getMeasuredWidth();
+    // Only check if we have a valid parent and expected dimensions
+    if (parent instanceof ViewGroup && expectedWidth > 0 && expectedHeight > 0) {
+      ViewGroup parentGroup = (ViewGroup) parent;
+      int parentWidth = parentGroup.getMeasuredWidth();
+      int parentHeight = parentGroup.getMeasuredHeight();
       
-      // Fix: Use parent width if it's exactly 1 pixel more than expected
-      // This only triggers when the issue occurs, minimizing performance impact
-      if (parentWidth == expectedWidth + 1) {
-        int widthSpec = MeasureSpec.makeMeasureSpec(parentWidth, MeasureSpec.EXACTLY);
-        super.onMeasure(widthSpec, heightMeasureSpec);
-      } else if (getMeasuredWidth() == expectedWidth - 1) {
-        // Fallback: if measured width is 1 pixel less than expected, fix it
-        int widthSpec = MeasureSpec.makeMeasureSpec(expectedWidth, MeasureSpec.EXACTLY);
-        super.onMeasure(widthSpec, heightMeasureSpec);
+      boolean needsWidthFix = parentWidth == expectedWidth + 1 || getMeasuredWidth() == expectedWidth - 1;
+      boolean needsHeightFix = parentHeight == expectedHeight + 1 || getMeasuredHeight() == expectedHeight - 1;
+      
+      // Fix width and/or height if needed
+      if (needsWidthFix || needsHeightFix) {
+        int finalWidth = needsWidthFix && parentWidth > 0 ? 
+            (parentWidth == expectedWidth + 1 ? parentWidth : expectedWidth) : 
+            MeasureSpec.getSize(widthMeasureSpec);
+        int finalHeight = needsHeightFix && parentHeight > 0 ? 
+            (parentHeight == expectedHeight + 1 ? parentHeight : expectedHeight) : 
+            MeasureSpec.getSize(heightMeasureSpec);
+        
+        int widthSpec = MeasureSpec.makeMeasureSpec(finalWidth, MeasureSpec.EXACTLY);
+        int heightSpec = MeasureSpec.makeMeasureSpec(finalHeight, MeasureSpec.EXACTLY);
+        super.onMeasure(widthSpec, heightSpec);
       }
     }
   }
