@@ -206,6 +206,36 @@ final public class InAppWebView extends InputAwareWebView implements InAppWebVie
     }
   }
 
+  @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    
+    // Fix for 1-pixel width reduction issue on high DPI devices
+    // Ensure the measured width matches the expected width exactly
+    int expectedWidth = MeasureSpec.getSize(widthMeasureSpec);
+    int measuredWidth = getMeasuredWidth();
+    int measureMode = MeasureSpec.getMode(widthMeasureSpec);
+    
+    // Debug logging
+    ViewParent parent = getParent();
+    int parentWidth = 0;
+    if (parent instanceof ViewGroup) {
+      parentWidth = ((ViewGroup) parent).getMeasuredWidth();
+    }
+    
+    Log.d(LOG_TAG, String.format("onMeasure: expectedWidth=%d, measuredWidth=%d, measureMode=%d, parentWidth=%d, diff=%d",
+            expectedWidth, measuredWidth, measureMode, parentWidth, expectedWidth - measuredWidth));
+    
+    // If measured width is 1 pixel less than expected, fix it
+    if (expectedWidth > 0 && measuredWidth == expectedWidth - 1) {
+      Log.d(LOG_TAG, String.format("Fixing 1-pixel width issue: remeasuring with exact width %d", expectedWidth));
+      int widthSpec = MeasureSpec.makeMeasureSpec(expectedWidth, MeasureSpec.EXACTLY);
+      super.onMeasure(widthSpec, heightMeasureSpec);
+      int newMeasuredWidth = getMeasuredWidth();
+      Log.d(LOG_TAG, String.format("After fix: newMeasuredWidth=%d", newMeasuredWidth));
+    }
+  }
+
   public WebViewClient createWebViewClient(InAppBrowserDelegate inAppBrowserDelegate) {
     // bug https://bugs.chromium.org/p/chromium/issues/detail?id=925887
     PackageInfo packageInfo = WebViewCompat.getCurrentWebViewPackage(getContext());

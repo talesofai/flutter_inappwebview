@@ -71,6 +71,11 @@ public class FlutterWebView implements PlatformWebView {
     webView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
     // Ensure padding is 0 to avoid width reduction issues on high DPI devices
     webView.setPadding(0, 0, 0, 0);
+    
+    // Debug logging
+    Log.d(LOG_TAG, String.format("FlutterWebView init: layoutParams=(%d, %d), padding=(%d, %d, %d, %d)",
+            ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT,
+            webView.getPaddingLeft(), webView.getPaddingTop(), webView.getPaddingRight(), webView.getPaddingBottom()));
     // PullToRefreshSettings pullToRefreshSettings = new PullToRefreshSettings();
     // pullToRefreshSettings.parse(pullToRefreshInitialSettings);
     // pullToRefreshLayout = new PullToRefreshLayout(context, plugin, id, pullToRefreshSettings);
