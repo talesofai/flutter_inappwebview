@@ -69,11 +69,11 @@ public class FlutterWebView implements PlatformWebView {
 
     // set MATCH_PARENT layout params to the WebView, otherwise it won't take all the available space!
     webView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-    PullToRefreshSettings pullToRefreshSettings = new PullToRefreshSettings();
-    pullToRefreshSettings.parse(pullToRefreshInitialSettings);
-    pullToRefreshLayout = new PullToRefreshLayout(context, plugin, id, pullToRefreshSettings);
-    pullToRefreshLayout.addView(webView);
-    pullToRefreshLayout.prepare();
+    // PullToRefreshSettings pullToRefreshSettings = new PullToRefreshSettings();
+    // pullToRefreshSettings.parse(pullToRefreshInitialSettings);
+    // pullToRefreshLayout = new PullToRefreshLayout(context, plugin, id, pullToRefreshSettings);
+    // pullToRefreshLayout.addView(webView);
+    // pullToRefreshLayout.prepare();
 
     FindInteractionController findInteractionController = new FindInteractionController(webView, plugin, id, null);
     webView.findInteractionController = findInteractionController;
@@ -84,7 +84,8 @@ public class FlutterWebView implements PlatformWebView {
 
   @Override
   public View getView() {
-    return pullToRefreshLayout != null ? pullToRefreshLayout : webView;
+    // return pullToRefreshLayout != null ? pullToRefreshLayout : webView;
+    return webView;
   }
 
   @SuppressLint("RestrictedApi")
