@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,6 +39,38 @@ public class PullToRefreshLayout extends SwipeRefreshLayout implements Disposabl
 
   public PullToRefreshLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
+  }
+
+  @Override
+  public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+    int expectedWidth = MeasureSpec.getSize(widthMeasureSpec);
+    int expectedHeight = MeasureSpec.getSize(heightMeasureSpec);
+    ViewParent parent = getParent();
+
+    if (!(parent instanceof ViewGroup) || expectedWidth <= 0 || expectedHeight <= 0) {
+      return;
+    }
+
+    ViewGroup parentGroup = (ViewGroup) parent;
+    int parentWidth = parentGroup.getMeasuredWidth();
+    int parentHeight = parentGroup.getMeasuredHeight();
+
+    boolean needsWidthFix = parentWidth == expectedWidth + 1 ||
+        parentWidth == getMeasuredWidth() + 1;
+    boolean needsHeightFix = parentHeight == expectedHeight + 1 ||
+        parentHeight == getMeasuredHeight() + 1;
+
+    if (!needsWidthFix && !needsHeightFix) {
+      return;
+    }
+
+    int finalWidth = needsWidthFix && parentWidth > 0 ? parentWidth : expectedWidth;
+    int finalHeight = needsHeightFix && parentHeight > 0 ? parentHeight : expectedHeight;
+    int fixedWidthSpec = MeasureSpec.makeMeasureSpec(finalWidth, MeasureSpec.EXACTLY);
+    int fixedHeightSpec = MeasureSpec.makeMeasureSpec(finalHeight, MeasureSpec.EXACTLY);
+    super.onMeasure(fixedWidthSpec, fixedHeightSpec);
   }
 
   public void prepare() {
